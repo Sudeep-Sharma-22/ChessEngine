@@ -1,0 +1,22 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compile and Run Java",
+            "type": "shell",
+            "command": "cmd.exe",
+            "args": [
+                "/c",
+                "javac \"${file}\" && java -cp \"${fileDirname}\" ${fileBasenameNoExtension} < \"${workspaceFolder}\\input.txt\" > \"${workspaceFolder}\\output.txt\""
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

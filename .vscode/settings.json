@@ -1,0 +1,13 @@
+{
+    "C_Cpp.errorSquiggles": "disabled",
+    "java.compile.nullAnalysis.mode": "disabled",
+    "editor.minimap.enabled": false,
+
+"[java]": {
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "editor.semanticHighlighting.enabled": false
+},
+
+"editor.semanticHighlighting.enabled": false,
+"editor.showUnused": false
+}
