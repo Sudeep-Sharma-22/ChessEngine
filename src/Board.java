@@ -22,4 +22,61 @@ public class Board {
         return squares[row][col];
     }
 
+    public boolean isOccupied(Position position){
+        return getSquare(position).isOccupied();
+    }
+
+    public Piece getPiece(Position position){
+        return getSquare(position).getPiece();
+    }
+
+    public void placePiece(Position position, Piece piece){
+        getSquare(position).placePiece(piece);
+    }
+
+    public void removePiece(Position position){
+        getSquare(position).removePiece();
+    }
+
+    public Position getPiecePosition(Piece piece){
+        if(piece==null){
+            throw new IllegalArgumentException("Invalid Piece passed");
+        }
+        Square square;
+        for(int row=0;row<BOARD_SIZE;row++){
+            for(int col=0;col<BOARD_SIZE;col++){
+                square = squares[row][col];
+                if(square.isOccupied() && square.getPiece()==piece){
+                    return square.getPosition();
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder board = new StringBuilder();
+        for(int row=0;row<BOARD_SIZE;row++){
+            for(int col=0;col<BOARD_SIZE;col++){
+                Square square = squares[row][col];
+                if(!square.isOccupied()){
+                    board.append('-');
+                    board.append(' ');
+                }
+                else{
+                    Piece piece = square.getPiece();
+                    char pieceRepresentation = piece.getRepresentation();
+                    Color pieceColor = piece.getColor();
+                    if(pieceColor == Color.BLACK){
+                        pieceRepresentation = Character.toLowerCase(pieceRepresentation);
+                    }
+                    board.append(pieceRepresentation);
+                    board.append(' ');
+                }
+            }
+            board.append('\n');
+        }
+        return board.toString();
+    }
 }
