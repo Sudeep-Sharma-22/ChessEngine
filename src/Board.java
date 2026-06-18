@@ -54,6 +54,20 @@ public class Board {
         return null;
     }
 
+    public boolean isValidMove(Move move) {
+        if (move == null) {
+            throw new IllegalArgumentException(
+                "Invalid move");
+        }
+
+        Piece piece = getPiece(move.getFrom());
+        if (piece == null) {
+            return false;
+        }
+
+        return piece.isValidMove(move, this);
+    }
+
     @Override
     public String toString(){
         StringBuilder board = new StringBuilder();

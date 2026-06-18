@@ -10,4 +10,6 @@ public abstract class Piece {
     }
 
     public abstract char getRepresentation();
+
+    public abstract boolean isValidMove(Move move, Board board);
 }
