@@ -1,19 +1,30 @@
 public class Main {
     public static void main(String[] args) {
-        Board board = new Board();
+Game game = new Game();
 
-        board.placePiece(
-                new Position(0, 0),
-                new Rook(Color.BLACK));
+game.makeMove(
+    new Move(
+        new Position(6,3),
+        new Position(4,3)
+    )
+);
 
-        board.placePiece(
-                new Position(7, 4),
-                new King(Color.WHITE));
+game.makeMove(
+    new Move(
+        new Position(1,0),
+        new Position(2,0)
+    )
+);
 
-        board.placePiece(
-                new Position(6, 3),
-                new Pawn(Color.WHITE));
+System.out.println(
+    game.makeMove(
+        new Move(
+            new Position(7,2),
+            new Position(5,4)
+        )
+    )
+);
 
-        System.out.println(board);
+System.out.println(game);
     }
 }

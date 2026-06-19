@@ -81,7 +81,14 @@ public class Board {
         Position start = move.getFrom();
         Position destination = move.getTo();
         Piece piece = getPiece(start);
+        //* remove the piece from start
         removePiece(start);
+        //*remove the piece at destination in case of a capture,
+        //*coz placePiece will only place at an empty square
+        if(isOccupied(destination)){
+            removePiece(destination);
+        }
+        //* place the piece on destination
         placePiece(destination, piece);
         return true;
     }

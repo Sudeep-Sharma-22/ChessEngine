@@ -84,7 +84,7 @@ public class Game {
 
     @Override
     public String toString() {
-        return board + "\nCurrent Turn: " + currentTurn;
+        return board + "\nCurrent Turn: " + currentTurn +"\n";
     }
 
 }
