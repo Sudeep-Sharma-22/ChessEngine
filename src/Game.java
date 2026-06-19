@@ -10,6 +10,16 @@ public class Game {
         setupBoard();
     }
 
+    //* constructor made for testing */
+    public Game(Board board){
+        if(board == null){
+            throw new IllegalArgumentException("Board cannot be null");
+        }
+
+        this.board = board;
+        this.currentTurn = Color.WHITE;
+    }
+
     private void setupBoard(){
         // set pawns
         for(int col=0;col<BOARD_SIZE;col++){
@@ -95,6 +105,23 @@ public class Game {
         return false;
     }
 
+    private void promotePawnIfNeeded(Position position){
+        // validate arguments
+        if(position == null){
+        throw new IllegalArgumentException("Position cannot  be null");
+        }
+
+        Piece piece = board.getPiece(position);
+        if(piece instanceof Pawn){
+            int row = position.getRow();
+            Color color = piece.getColor();
+            boolean shouldPromote = (color == Color.BLACK && row == 7) || (color == Color.WHITE && row == 0);
+            if(shouldPromote){
+                board.replacePiece(position, new Queen(color));
+            }
+        }
+    }
+
     public boolean makeMove(Move move){
         //* Validate arguments
         if(move == null){
@@ -124,6 +151,13 @@ public class Game {
             board.undoMove(move, capturedPiece);
             return false;
         }
+
+        //* promote if possible(this function will take care of whether pawn/not pawn/possible/not possible)
+        // NOTE:
+        // Promotion is not yet reversible.
+        // If move search or AI is later implemented,
+        // undoMove will need promotion support.
+        promotePawnIfNeeded(move.getTo());
 
         //* Since move is successful, change turns 
         currentTurn = currentTurn.opposite();

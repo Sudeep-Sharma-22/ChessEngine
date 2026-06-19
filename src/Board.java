@@ -38,6 +38,15 @@ public class Board {
         getSquare(position).removePiece();
     }
 
+    public void replacePiece(Position position, Piece piece){
+        if(position == null || piece == null){
+            throw new IllegalArgumentException("Invalid Arguments Passed");
+        }
+
+        removePiece(position);
+        placePiece(position, piece);
+    }
+
     public Position getPiecePosition(Piece piece){
         if(piece==null){
             throw new IllegalArgumentException("Invalid Piece passed");

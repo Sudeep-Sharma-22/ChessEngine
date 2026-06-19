@@ -1,25 +1,50 @@
 public class Main {
     public static void main(String[] args) {
-Game game = new Game();
+Board board = new Board();
 
-game.makeMove(new Move(
-        new Position(6,5),
-        new Position(5,5))); // f3
+board.placePiece(
+        new Position(6, 7),
+        new Pawn(Color.BLACK));
 
-game.makeMove(new Move(
-        new Position(1,4),
-        new Position(3,4))); // e5
+board.placePiece(
+        new Position(7, 4),
+        new King(Color.WHITE));
 
-game.makeMove(new Move(
-        new Position(6,6),
-        new Position(4,6))); // g4
+board.placePiece(
+        new Position(0, 4),
+        new King(Color.BLACK));
 
-game.makeMove(new Move(
-        new Position(0,3),
-        new Position(4,7))); // Qh4#
+Game game = new Game(board);
 
-System.out.println(game.isInCheck(Color.WHITE));
-System.out.println(game.isCheckmate(Color.WHITE));
-System.out.println(game.isStalemate(Color.WHITE));
+// Make it Black's turn
+game.makeMove(
+        new Move(
+                new Position(7, 4),
+                new Position(7, 3)
+        )
+);
+
+System.out.println("Before:");
+System.out.println(game);
+
+System.out.println(
+        game.makeMove(
+                new Move(
+                        new Position(6, 7),
+                        new Position(7, 7)
+                )
+        )
+);
+
+System.out.println("After:");
+System.out.println(game);
+
+Position p = new Position(7, 7);
+
+Piece piece = board.getPiece(p);
+
+System.out.println(
+        piece instanceof Queen
+);
     }
 }
