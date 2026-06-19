@@ -93,6 +93,47 @@ public class Board {
         return true;
     }
 
+    public void undoMove(Move move, Piece capturedPiece){
+        if(move==null){
+            throw new IllegalArgumentException("Move cannot be null");
+        }
+
+        Position from = move.getFrom();
+        Position to = move.getTo();
+
+        Piece movingPiece = getPiece(to);
+        if(movingPiece==null){
+            throw new IllegalStateException("No piece to undo");
+        }
+
+
+        //* restore moving piece back to from
+        removePiece(to);
+        placePiece(from, movingPiece);
+
+        //* restore capturedpiece if capture happened
+        if(capturedPiece!=null){
+            placePiece(to, capturedPiece);
+        }
+    }
+
+    public Position findKing(Color color){
+        if(color == null){
+            throw new IllegalArgumentException("Color cannot be null");
+        }
+        
+        for(int row=0;row<BOARD_SIZE;row++){
+            for(int col=0;col<BOARD_SIZE;col++){
+                Square square = squares[row][col];
+                Piece piece = square.getPiece();
+                if(piece instanceof King && piece.getColor()==color){
+                    return new Position(row, col);
+                }
+            }
+        }
+        throw new IllegalStateException("King not found");
+    }
+
     @Override
     public String toString(){
         StringBuilder board = new StringBuilder();
