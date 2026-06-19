@@ -60,12 +60,30 @@ public class Board {
                 "Invalid move");
         }
 
+        // check if a piece is in the position from which we want to move it
         Piece piece = getPiece(move.getFrom());
         if (piece == null) {
             return false;
         }
 
         return piece.isValidMove(move, this);
+    }
+
+    public boolean makeMove(Move move){
+        if(move == null){
+            throw new IllegalArgumentException("Invalid Move");
+        }
+
+        if(!isValidMove(move)){
+            return false;
+        }
+
+        Position start = move.getFrom();
+        Position destination = move.getTo();
+        Piece piece = getPiece(start);
+        removePiece(start);
+        placePiece(destination, piece);
+        return true;
     }
 
     @Override
