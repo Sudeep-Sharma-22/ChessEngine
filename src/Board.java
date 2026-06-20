@@ -78,18 +78,21 @@ public class Board {
         return piece.isValidMove(move, this);
     }
 
-    public boolean makeMove(Move move){
+    //* should be called when guaranteed that move wont fail
+    //* that is why it does not return anything
+    public void forceMove(Move move){
         if(move == null){
             throw new IllegalArgumentException("Invalid Move");
         }
 
-        if(!isValidMove(move)){
-            return false;
-        }
-
         Position start = move.getFrom();
         Position destination = move.getTo();
+
         Piece piece = getPiece(start);
+        if(piece == null){
+            throw new IllegalStateException("No piece at source square");
+        }
+
         //* remove the piece from start
         removePiece(start);
         //*remove the piece at destination in case of a capture,
@@ -99,10 +102,24 @@ public class Board {
         }
         //* place the piece on destination
         placePiece(destination, piece);
+        piece.setMoved(true);
+    }
+
+    //* Pseudo Legal Move 
+    public boolean makeMove(Move move){
+        if(move == null){
+            throw new IllegalArgumentException("Invalid Move");
+        }
+
+        if(!isValidMove(move)){
+            return false;
+        }
+
+        forceMove(move);
         return true;
     }
 
-    public void undoMove(Move move, Piece capturedPiece , Piece originalMovingPiece){
+    public void undoMove(Move move, Piece capturedPiece , Piece originalMovingPiece, boolean originalHasMoved){
         if(move==null){
             throw new IllegalArgumentException("Move cannot be null");
         }
@@ -119,6 +136,8 @@ public class Board {
 
         //* restore moving piece back to from
         removePiece(to);
+        // restore the hasmoved for original moving piece before putting it on the board
+        originalMovingPiece.setMoved(originalHasMoved);
         placePiece(from, originalMovingPiece);
 
         //* restore capturedpiece if capture happened

@@ -1,3 +1,5 @@
+import java.time.Period;
+
 public class Game {
     private final Board board;
     private Color currentTurn;
@@ -85,12 +87,13 @@ public class Game {
                             if(start.equals(destination))continue;
                             Piece capturedPiece = board.getPiece(destination);
                             Move move = new Move(start, destination);
+                            boolean originalHasMoved = piece.hasMoved();
                             // see if move can be made
                             if(board.makeMove(move)){
                                 // get if move was legal or not
                                 boolean legal = !isInCheck(color);
                                 //undo the changes
-                                board.undoMove(move, capturedPiece, piece);
+                                board.undoMove(move, capturedPiece, piece, originalHasMoved);
                                 // if legal move, then return true
                                 if(legal){
                                     return true;
@@ -122,6 +125,138 @@ public class Game {
         }
     }
 
+    private boolean isSquareUnderAttack(Position position, Color victimColor){
+        if(position == null || victimColor == null){
+            throw new IllegalArgumentException("Invalid Arguments Passed");
+        }
+
+        Color enemyColor = victimColor.opposite();
+
+        for(int row=0;row<BOARD_SIZE;row++){
+            for(int col=0;col<BOARD_SIZE;col++){
+                Position enemyPosition = new Position(row, col);
+                if(enemyPosition.equals(position)){
+                    continue;
+                }
+                Piece enemyPiece = board.getPiece(enemyPosition);
+                if(enemyPiece != null && enemyPiece.getColor()==enemyColor){
+                    Move move = new Move(enemyPosition,position);
+                    if(enemyPiece.isValidMove(move, board)){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isCastlingMove(Move move){
+        if(move == null){
+            throw new IllegalArgumentException("Move cannot be null");
+        }
+
+        Piece piece = board.getPiece(move.getFrom());
+
+        if( !(piece instanceof King) ){
+            return false;
+        }
+
+        Position from = move.getFrom();
+        Position to = move.getTo();
+
+        int rowDiff = Math.abs(to.getRow() - from.getRow());
+        int colDiff = Math.abs(to.getCol() - from.getCol());
+
+        return rowDiff==0 && colDiff==2;
+    }
+
+    private boolean canCastle(Move move){
+        //* Validate arguments
+        if(move == null){
+            throw new IllegalArgumentException("Move cannot be null");
+        }
+
+        //* Check if the move is actually a castling move
+        if(!isCastlingMove(move)){
+            return false;
+        }
+
+        Position from = move.getFrom();
+        Position to = move.getTo();
+
+        King king = (King)board.getPiece(from);
+        Color color = king.getColor();
+        int row = from.getRow();
+        boolean kingside = to.getCol() > from.getCol();
+
+        //* check if king has moved 
+        if(king.hasMoved()){
+            return false;
+        }
+
+        int rookCol = kingside ? 7 : 0;
+        Position rookPosition = new Position(row, rookCol);
+        Piece rook = board.getPiece(rookPosition);
+        
+        //* check if rook has moved 
+        if( !(rook instanceof Rook) || (rook.getColor()!=color) || rook.hasMoved() ){
+            return false;
+        }
+
+        //* check whether squares b/w king and rook are empty 
+        int startCol = kingside ? 5 : 1;
+        int endCol = kingside ? 6 : 3;
+
+        for(int col = startCol; col<=endCol; col++){
+            Position position = new Position(row, col);
+            if(board.isOccupied(position)){
+                return false;
+            }
+        }
+
+        //* see whether king is in check 
+        if(isInCheck(color)){
+            return false;
+        }
+
+        //* check that king does not move through check and into check 
+        int kingCol = kingside ? 5 : 3;
+        int step = kingside ? 1 : -1;
+        for(int col=kingCol; col!=to.getCol()+step; col+=step){
+            Position position = new Position(row, col);
+            if(isSquareUnderAttack(position, color)){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    //* Note : This does not check if canCastle()==true.
+    private void performCastling(Move move){
+        if(move == null){
+            throw new IllegalArgumentException("Move cannot be null");
+        }
+
+        Position from = move.getFrom();
+        Position to = move.getTo();
+
+        int row = from.getRow();
+
+        boolean kingside = to.getCol() > from.getCol();
+
+        int rookStartCol = kingside ? 7 : 0;
+        int rookEndCol = kingside ? 5 : 3;
+
+        Position rookStartPosition = new Position(row, rookStartCol);
+        Position rookEndPosition = new Position(row, rookEndCol);
+        Move rookMove = new Move(rookStartPosition,rookEndPosition);
+
+        board.forceMove(move);
+        board.forceMove(rookMove);
+    }
+
+    //* Fully legal move
     public boolean makeMove(Move move){
         //* Validate arguments
         if(move == null){
@@ -130,14 +265,26 @@ public class Game {
 
         //* get the moving piece and captured piece(could be null if no capture)
         Piece movingPiece = board.getPiece(move.getFrom());
-        Piece capturedPiece = board.getPiece(move.getTo());
-
         //* Validate moving piece
         if(movingPiece == null){
             return false;
         }
+        boolean originalHasMoved = movingPiece.hasMoved();
+        Piece capturedPiece = board.getPiece(move.getTo());
+
         //* Check whether different piece
         if(movingPiece.getColor()!=currentTurn){
+            return false;
+        }
+
+        if(isCastlingMove(move)){
+            if(canCastle(move)){
+                performCastling(move);
+                currentTurn = currentTurn.opposite();
+                //* return true coz castling move is done
+                return true;
+            }
+            //* return false since its a castling move and canCastle()==false
             return false;
         }
         
@@ -148,7 +295,7 @@ public class Game {
 
         //* check if the above move leaves ur king in check
         if(isInCheck(currentTurn)){
-            board.undoMove(move, capturedPiece, movingPiece);
+            board.undoMove(move, capturedPiece, movingPiece, originalHasMoved);
             return false;
         }
 
@@ -168,20 +315,8 @@ public class Game {
         }
 
         Position kingPosition = board.findKing(color);
-        Color enemyColor = color.opposite();
-        for(int row = 0;row<BOARD_SIZE;row++){
-            for(int col = 0;col<BOARD_SIZE;col++){
-                Position position = new Position(row, col);
-                Piece piece = board.getPiece(position);
-                if(piece!=null && piece.getColor()==enemyColor){
-                    Move move = new Move(position,kingPosition);
-                    if(piece.isValidMove(move,board)){
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        
+        return isSquareUnderAttack(kingPosition, color);
     }
 
     public boolean isCheckmate(Color color){

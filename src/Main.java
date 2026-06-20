@@ -1,70 +1,77 @@
 public class Main {
     public static void main(String[] args) {
-Board board = new Board();
+        Game game = new Game();
 
-board.placePiece(
-    new Position(1, 0),
-    new Pawn(Color.WHITE)
-);
+game.makeMove(new Move(
+        new Position(6,4),
+        new Position(4,4)
+));
 
-board.placePiece(
-    new Position(0, 1),
-    new Rook(Color.BLACK)
-);
+game.makeMove(new Move(
+        new Position(1,4),
+        new Position(3,4)
+));
 
-board.placePiece(
-    new Position(7, 4),
-    new King(Color.WHITE)
-);
+game.makeMove(new Move(
+        new Position(7,6),
+        new Position(5,5)
+));
 
-board.placePiece(
-    new Position(0, 4),
-    new King(Color.BLACK)
-);
+game.makeMove(new Move(
+        new Position(0,1),
+        new Position(2,2)
+));
 
-Move move =
-        new Move(
-            new Position(1, 0),
-            new Position(0, 1)
-        );
+game.makeMove(new Move(
+        new Position(7,5),
+        new Position(4,2)
+));
 
-Piece movingPiece =
-        board.getPiece(move.getFrom());
-
-Piece capturedPiece =
-        board.getPiece(move.getTo());
-
-board.makeMove(move);
-
-// Promote
-board.replacePiece(
-    move.getTo(),
-    new Queen(Color.WHITE)
-);
-
-System.out.println("After promotion capture:");
-System.out.println(board);
-
-// Undo
-board.undoMove(
-    move,
-    capturedPiece,
-    movingPiece
-);
-
-System.out.println("After undo:");
-System.out.println(board);
+game.makeMove(new Move(
+        new Position(0,6),
+        new Position(2,5)
+));
 
 System.out.println(
-        board.getPiece(
-            new Position(1, 0)
-        ) instanceof Pawn
+        game.makeMove(
+                new Move(
+                        new Position(7,4),
+                        new Position(7,6)
+                )
+        )
 );
 
+System.out.println(game);
+
+game.makeMove(new Move(
+        new Position(1,6),
+        new Position(2,6)
+));
+
+game.makeMove(new Move(
+        new Position(6,0),
+        new Position(5,0)
+));
+
+game.makeMove(new Move(
+        new Position(0,5),
+        new Position(1,6)
+));
+
+game.makeMove(new Move(
+        new Position(6,1),
+        new Position(5,1)
+));
+
 System.out.println(
-        board.getPiece(
-            new Position(0, 1)
-        ) instanceof Rook
+        game.makeMove(
+                new Move(
+                        new Position(0,4),
+                        new Position(0,6)
+                )
+        )
 );
+
+System.out.println(game);
     }
 }
