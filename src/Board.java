@@ -102,23 +102,24 @@ public class Board {
         return true;
     }
 
-    public void undoMove(Move move, Piece capturedPiece){
+    public void undoMove(Move move, Piece capturedPiece , Piece originalMovingPiece){
         if(move==null){
             throw new IllegalArgumentException("Move cannot be null");
+        }
+        if(originalMovingPiece == null){
+            throw new IllegalArgumentException("originalMovingPiece cannot be null");
         }
 
         Position from = move.getFrom();
         Position to = move.getTo();
-
-        Piece movingPiece = getPiece(to);
-        if(movingPiece==null){
+        //* verify that a move happened
+        if(getPiece(to) == null){
             throw new IllegalStateException("No piece to undo");
         }
 
-
         //* restore moving piece back to from
         removePiece(to);
-        placePiece(from, movingPiece);
+        placePiece(from, originalMovingPiece);
 
         //* restore capturedpiece if capture happened
         if(capturedPiece!=null){

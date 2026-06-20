@@ -3,48 +3,68 @@ public class Main {
 Board board = new Board();
 
 board.placePiece(
-        new Position(6, 7),
-        new Pawn(Color.BLACK));
+    new Position(1, 0),
+    new Pawn(Color.WHITE)
+);
 
 board.placePiece(
-        new Position(7, 4),
-        new King(Color.WHITE));
+    new Position(0, 1),
+    new Rook(Color.BLACK)
+);
 
 board.placePiece(
-        new Position(0, 4),
-        new King(Color.BLACK));
+    new Position(7, 4),
+    new King(Color.WHITE)
+);
 
-Game game = new Game(board);
+board.placePiece(
+    new Position(0, 4),
+    new King(Color.BLACK)
+);
 
-// Make it Black's turn
-game.makeMove(
+Move move =
         new Move(
-                new Position(7, 4),
-                new Position(7, 3)
-        )
+            new Position(1, 0),
+            new Position(0, 1)
+        );
+
+Piece movingPiece =
+        board.getPiece(move.getFrom());
+
+Piece capturedPiece =
+        board.getPiece(move.getTo());
+
+board.makeMove(move);
+
+// Promote
+board.replacePiece(
+    move.getTo(),
+    new Queen(Color.WHITE)
 );
 
-System.out.println("Before:");
-System.out.println(game);
+System.out.println("After promotion capture:");
+System.out.println(board);
 
-System.out.println(
-        game.makeMove(
-                new Move(
-                        new Position(6, 7),
-                        new Position(7, 7)
-                )
-        )
+// Undo
+board.undoMove(
+    move,
+    capturedPiece,
+    movingPiece
 );
 
-System.out.println("After:");
-System.out.println(game);
-
-Position p = new Position(7, 7);
-
-Piece piece = board.getPiece(p);
+System.out.println("After undo:");
+System.out.println(board);
 
 System.out.println(
-        piece instanceof Queen
+        board.getPiece(
+            new Position(1, 0)
+        ) instanceof Pawn
+);
+
+System.out.println(
+        board.getPiece(
+            new Position(0, 1)
+        ) instanceof Rook
 );
     }
 }

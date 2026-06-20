@@ -90,7 +90,7 @@ public class Game {
                                 // get if move was legal or not
                                 boolean legal = !isInCheck(color);
                                 //undo the changes
-                                board.undoMove(move, capturedPiece);
+                                board.undoMove(move, capturedPiece, piece);
                                 // if legal move, then return true
                                 if(legal){
                                     return true;
@@ -148,15 +148,11 @@ public class Game {
 
         //* check if the above move leaves ur king in check
         if(isInCheck(currentTurn)){
-            board.undoMove(move, capturedPiece);
+            board.undoMove(move, capturedPiece, movingPiece);
             return false;
         }
 
         //* promote if possible(this function will take care of whether pawn/not pawn/possible/not possible)
-        // NOTE:
-        // Promotion is not yet reversible.
-        // If move search or AI is later implemented,
-        // undoMove will need promotion support.
         promotePawnIfNeeded(move.getTo());
 
         //* Since move is successful, change turns 
