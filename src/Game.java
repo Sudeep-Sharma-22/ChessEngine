@@ -1,25 +1,28 @@
-import java.time.Period;
-
 public class Game {
     private final Board board;
     private Color currentTurn;
     private static final int BOARD_SIZE = 8;
+    private Move lastMove;
 
     public Game(){
-        board = new Board();
-        currentTurn = Color.WHITE;
-        
+        this.board = new Board();
+        this.currentTurn = Color.WHITE;
+        this.lastMove = null;
+
         setupBoard();
     }
 
-    //* constructor made for testing */
-    public Game(Board board){
-        if(board == null){
-            throw new IllegalArgumentException("Board cannot be null");
+    //* Constructor made for testing
+    public Game(Board board, Color currentTurn, Move lastMove){
+        if(board == null || currentTurn == null){
+            throw new IllegalArgumentException(
+                    "Invalid arguments"
+            );
         }
 
         this.board = board;
-        this.currentTurn = Color.WHITE;
+        this.currentTurn = currentTurn;
+        this.lastMove = lastMove;
     }
 
     private void setupBoard(){
@@ -232,7 +235,7 @@ public class Game {
         return true;
     }
 
-    //* Note : This does not check if canCastle()==true.
+    //* Note : This does not check if canCastle()==true, it assumes it is
     private void performCastling(Move move){
         if(move == null){
             throw new IllegalArgumentException("Move cannot be null");
@@ -256,6 +259,125 @@ public class Game {
         board.forceMove(rookMove);
     }
 
+    //* Checks whether it is an enPassantMove and also checks whether
+    //* en passant is possible
+    private boolean isEnPassantMove(Move move){
+        //* Validate arguments
+        if(move == null){
+            throw new IllegalArgumentException("Move cannot be Null");
+        }
+
+        //* if first move, then no en passant possible
+        if(lastMove == null){
+            return false;
+        }
+
+        Piece movingPiece = board.getPiece(move.getFrom());
+        //* check that the moving piece is a pawn
+        if( !(movingPiece instanceof Pawn) ){
+            return false;
+        }
+
+        Position from = move.getFrom();
+        Position to = move.getTo();
+
+        //* check if the destination is empty(just a safety check)
+        if(board.isOccupied(to)){
+            return false;
+        }
+
+        int rowDiff = Math.abs(to.getRow() - from.getRow());
+        int colDiff = Math.abs(to.getCol() - from.getCol());
+        //* check that piece only moves exactly 1 row and 1 column
+        if(rowDiff != 1 || colDiff != 1){
+            return false;
+        }
+
+        //* another safety check based on pawn's moving direction
+        int direction = movingPiece.getColor()==Color.WHITE?-1:1;
+        if(to.getRow() != from.getRow() + direction){
+            return false;
+        }
+
+        Piece lastMovedPiece = board.getPiece(lastMove.getTo());
+        //* check that the last move was made by a pawn only
+        if( !(lastMovedPiece instanceof Pawn) ){
+            return false;
+        }
+
+        //* check that the last pawn which moved was of enemy
+        if(lastMovedPiece.getColor() == movingPiece.getColor()){
+            return false;
+        }
+
+        Position lastFrom= lastMove.getFrom();
+        Position lastTo = lastMove.getTo();
+
+        //* check that the pawn that moved in lastmove jumped 2 squares
+        int lastRowDiff = Math.abs(lastTo.getRow() - lastFrom.getRow());
+        if(lastRowDiff!=2){
+            return false;
+        }
+
+        //* check whether our pawn is adjacent to the enemy pawn
+        if(from.getRow() != lastTo.getRow()){
+            return false;
+        }
+        if(to.getCol() != lastTo.getCol()){
+            return false;
+        }
+
+        //* Above if's being false mean valid for en passant
+        return true;
+    }
+
+    //* this does not check if enPassant is valid, it assumes it is
+    private void performEnPassant(Move move){
+        //* Validate arguments 
+        if(move == null){
+            throw new IllegalArgumentException("Move cannot be null");
+        }
+
+        //* move the pawn as we know move is valid
+        board.forceMove(move);
+
+        Position capturedPawnPosition = lastMove.getTo();
+
+        //* remove the captured piece from the board
+        board.removePiece(capturedPawnPosition);
+    }
+
+    //* assumes enPassant has occured
+    private void undoEnPassant(Move move, Piece capturedPawn, Position capturedPawnPosition, boolean originalHasMoved){
+        //* Validate arguments
+        if(move == null){
+            throw new IllegalArgumentException("Move cannot be null");
+        }
+        if( !(capturedPawn instanceof Pawn) ){
+            throw new IllegalArgumentException("Captured piece is not a Pawn");
+        }
+
+        Position from = move.getFrom();
+        Position to = move.getTo();
+
+        Piece movingPiece = board.getPiece(to);
+        if(movingPiece == null){
+            throw new IllegalStateException("No Piece to undo");
+        }
+
+        // restore the capturing pawn
+        board.removePiece(to);
+        board.placePiece(from, movingPiece);
+        movingPiece.setMoved(originalHasMoved);
+
+        // restore the captured pawn
+        //* NOTE: we dont use lastmove.getTo to get the capuredPawnPosition
+        //* because if lastmove changes, it will break, so we want undo
+        //* to be self sustained
+        board.placePiece(capturedPawnPosition, capturedPawn);
+        
+    }
+
     //* Fully legal move
     public boolean makeMove(Move move){
         //* Validate arguments
@@ -277,17 +399,37 @@ public class Game {
             return false;
         }
 
+        //* Call Castling procedure and return if a castling move
         if(isCastlingMove(move)){
             if(canCastle(move)){
                 performCastling(move);
+                //* update last move and currentturn and return move successful
+                lastMove = move;
                 currentTurn = currentTurn.opposite();
-                //* return true coz castling move is done
                 return true;
             }
             //* return false since its a castling move and canCastle()==false
             return false;
         }
         
+        //* Call EnPassant procedure and return if enPassant move
+        if(isEnPassantMove(move)){
+            Position capturedPawnPosition = lastMove.getTo();
+            Piece capturedPawn = board.getPiece(capturedPawnPosition);
+
+            performEnPassant(move);
+
+            if(isInCheck(currentTurn)){
+                undoEnPassant(move, capturedPawn, capturedPawnPosition, originalHasMoved);
+                return false;
+            }
+
+            // update last move and current turn and return move successful
+            lastMove = move;
+            currentTurn = currentTurn.opposite();
+            return true;
+        }
+
         //* make the move and return false if move unsuccesful
         if(!board.makeMove(move)){
             return false;
@@ -301,6 +443,9 @@ public class Game {
 
         //* promote if possible(this function will take care of whether pawn/not pawn/possible/not possible)
         promotePawnIfNeeded(move.getTo());
+
+        //* update the last move
+        lastMove = move;
 
         //* Since move is successful, change turns 
         currentTurn = currentTurn.opposite();

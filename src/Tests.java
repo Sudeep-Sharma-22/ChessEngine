@@ -1,8 +1,8 @@
 public class Tests {
     public static void main(String[] args) {
 // Test 1: Initial Board Setup
-Game game = new Game();
-System.out.println(game);
+// Game game = new Game();
+// System.out.println(game);
 
 // Expected:
 
@@ -1025,5 +1025,240 @@ System.out.println(game);
 
 // // Expected :
 // // false
+
+// Test 32: Valid White enPassant
+// Game game = new Game();
+
+// game.makeMove(new Move(
+//         new Position(6, 4),
+//         new Position(4, 4)
+// )); // e2 -> e4
+
+// game.makeMove(new Move(
+//         new Position(1, 0),
+//         new Position(2, 0)
+// )); // a7 -> a6
+
+// game.makeMove(new Move(
+//         new Position(4, 4),
+//         new Position(3, 4)
+// )); // e4 -> e5
+
+// game.makeMove(new Move(
+//         new Position(1, 3),
+//         new Position(3, 3)
+// )); // d7 -> d5
+
+// System.out.println(
+//         game.makeMove(
+//                 new Move(
+//                         new Position(3, 4),
+//                         new Position(2, 3)
+//                 )
+//         )
+// );
+
+// System.out.println(game);
+
+// Expected:
+
+// true
+
+// Test 33 : Valid black en passant
+// Game game = new Game();
+
+// game.makeMove(new Move(
+//         new Position(6, 0),
+//         new Position(5, 0)
+// )); // a2 -> a3
+
+// game.makeMove(new Move(
+//         new Position(1, 4),
+//         new Position(3, 4)
+// )); // e7 -> e5
+
+// game.makeMove(new Move(
+//         new Position(5, 0),
+//         new Position(4, 0)
+// )); // a3 -> a4
+
+// game.makeMove(new Move(
+//         new Position(3, 4),
+//         new Position(4, 4)
+// )); // e5 -> e4
+
+// game.makeMove(new Move(
+//         new Position(6, 3),
+//         new Position(4, 3)
+// )); // d2 -> d4
+
+// System.out.println(
+//         game.makeMove(
+//                 new Move(
+//                         new Position(4, 4),
+//                         new Position(5, 3)
+//                 )
+//         )
+// );
+
+// System.out.println(game);
+
+// Expected:
+
+// true
+
+// Test 34: Too late for en passant
+// Game game = new Game();
+
+// game.makeMove(new Move(
+//         new Position(6, 4),
+//         new Position(4, 4)
+// )); // e2 -> e4
+
+// game.makeMove(new Move(
+//         new Position(1, 0),
+//         new Position(2, 0)
+// )); // a7 -> a6
+
+// game.makeMove(new Move(
+//         new Position(4, 4),
+//         new Position(3, 4)
+// )); // e4 -> e5
+
+// game.makeMove(new Move(
+//         new Position(1, 3),
+//         new Position(3, 3)
+// )); // d7 -> d5
+
+// game.makeMove(new Move(
+//         new Position(6, 0),
+//         new Position(5, 0)
+// )); // a2 -> a3
+
+// game.makeMove(new Move(
+//         new Position(2, 0),
+//         new Position(3, 0)
+// )); // a6 -> a5
+
+// System.out.println(
+//         game.makeMove(
+//                 new Move(
+//                         new Position(3, 4),
+//                         new Position(2, 3)
+//                 )
+//         )
+// );
+
+// Expected:
+
+// false
+
+// Test 35: En passant exposes check
+// Board board = new Board();
+
+// board.placePiece(
+//         new Position(0, 0),
+//         new King(Color.BLACK)
+// );
+
+// board.placePiece(
+//         new Position(3, 7),
+//         new Rook(Color.BLACK)
+// );
+
+// board.placePiece(
+//         new Position(7, 7),
+//         new King(Color.WHITE)
+// );
+
+// board.placePiece(
+//         new Position(3, 6),
+//         new Pawn(Color.WHITE)
+// );
+
+// board.placePiece(
+//         new Position(3, 5),
+//         new Pawn(Color.BLACK)
+// );
+
+// Game game = new Game(
+//         board,
+//         Color.WHITE,
+//         new Move(
+//                 new Position(1, 5),
+//                 new Position(3, 5)
+//         )
+// );
+
+// System.out.println(
+//         game.makeMove(
+//                 new Move(
+//                         new Position(3, 6),
+//                         new Position(2, 5)
+//                 )
+//         )
+// );
+
+// System.out.println(game);
+
+// Expected:
+
+// false
+
+// Test 36: Undo enPassant
+Board board = new Board();
+
+board.placePiece(
+        new Position(0, 0),
+        new King(Color.BLACK)
+);
+
+board.placePiece(
+        new Position(3, 7),
+        new Rook(Color.BLACK)
+);
+
+board.placePiece(
+        new Position(7, 7),
+        new King(Color.WHITE)
+);
+
+board.placePiece(
+        new Position(3, 6),
+        new Pawn(Color.WHITE)
+);
+
+board.placePiece(
+        new Position(3, 5),
+        new Pawn(Color.BLACK)
+);
+
+Game game = new Game(
+        board,
+        Color.WHITE,
+        new Move(
+                new Position(1, 5),
+                new Position(3, 5)
+        )
+);
+
+System.out.println("Before:");
+System.out.println(game);
+
+boolean result = game.makeMove(
+        new Move(
+                new Position(3, 6),
+                new Position(2, 5)
+        )
+);
+
+System.out.println(result);
+
+System.out.println("After:");
+System.out.println(game);
+
+// Expected:
+
+// false
     }
 }

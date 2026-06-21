@@ -119,6 +119,8 @@ public class Board {
         return true;
     }
 
+    //* Note: undoing the removed pawn of en passant not implemented in this,
+    //* that is done in undoEnPassant() in Game
     public void undoMove(Move move, Piece capturedPiece , Piece originalMovingPiece, boolean originalHasMoved){
         if(move==null){
             throw new IllegalArgumentException("Move cannot be null");
