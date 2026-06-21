@@ -169,6 +169,10 @@ public class Board {
     public String toString(){
         StringBuilder board = new StringBuilder();
         for(int row=0;row<BOARD_SIZE;row++){
+            // add the rank numbers
+            board.append(8 - row);
+            board.append("   ");
+
             for(int col=0;col<BOARD_SIZE;col++){
                 Square square = squares[row][col];
                 if(!square.isOccupied()){
@@ -188,6 +192,17 @@ public class Board {
             }
             board.append('\n');
         }
+
+        // append one line space b/w board and file numbers 
+        board.append('\n');
+        // append 4 spaces to be in line(1 space for rank, and gap of 3 spaces b/w rank and board)
+        board.append("    ");
+        for(char file = 'a'; file <= 'h' ; file++){
+            board.append(file);
+            board.append(' ');
+        }
+        board.append('\n');
+
         return board.toString();
     }
 }

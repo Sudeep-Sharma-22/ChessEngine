@@ -564,6 +564,14 @@ public class Game {
         return !isInCheck(color) && !hasAnyLegalMove(color);
     }
 
+    public String getBoardRepresentation(){
+        return board.toString();
+    }
+
+    public Color getCurrentTurn(){
+        return currentTurn;
+    }
+
     @Override
     public String toString() {
         return board + "\nCurrent Turn: " + currentTurn +"\n";

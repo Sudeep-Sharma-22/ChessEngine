@@ -33,9 +33,14 @@ public class Main {
 
         while(true) {
             System.out.println(game);
-            System.out.print("Enter move: ");
-
+            System.out.print(game.getCurrentTurn()+" to move: ");
+            
             String input = scanner.nextLine();
+            System.out.println();
+
+            if(input.equalsIgnoreCase("quit")){
+                break;
+            }
 
             String[] parts = input.trim().split("\\s+");
             if(parts.length != 2){
@@ -55,6 +60,27 @@ public class Main {
                     System.out.println("Illegal move");
                     System.out.println();
                 }
+                else{
+                    //move has been made successfully and turns switched
+                    Color currentTurn = game.getCurrentTurn();
+                    Color enemy = currentTurn.opposite();
+                    if(game.isCheckmate(currentTurn)){
+                        System.out.println(game.getBoardRepresentation());
+                        System.out.println("Checkmate! " + enemy + " wins!");
+                        System.out.println();
+                        break;
+                    }
+                    else if(game.isStalemate(currentTurn)){
+                        System.out.println(game.getBoardRepresentation());
+                        System.out.println("Stalemate! It's a Draw!");
+                        System.out.println();
+                        break;
+                    }
+                    else if(game.isInCheck(currentTurn)){
+                        System.out.println(currentTurn + " King in Check!");
+                        System.out.println();
+                    }
+                }
             }
             //* We are only catching IllegalArgument exception and not illegal
             //* state exception because former means that user did something 
@@ -63,8 +89,11 @@ public class Main {
             //* ,so we want it to crash so we can fix it.
             catch(IllegalArgumentException e){
                 System.out.println(e.getMessage());
+                System.out.println();
             }
 
         }
+
+        scanner.close();
     }
 }
