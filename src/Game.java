@@ -12,7 +12,20 @@ public class Game {
         setupBoard();
     }
 
-    //* Constructor made for testing
+    //* Constructor 2 made for testing
+    public Game(Board board){
+        if(board == null){
+            throw new IllegalArgumentException(
+                    "Invalid arguments"
+            );
+        }
+
+        this.board = board;
+        this.currentTurn = Color.WHITE;
+        this.lastMove = null;
+    }
+
+    //* Constructor 3 made for testing
     public Game(Board board, Color currentTurn, Move lastMove){
         if(board == null || currentTurn == null){
             throw new IllegalArgumentException(
@@ -111,6 +124,8 @@ public class Game {
         return false;
     }
 
+    //* Promotes to queen by default when no choice passed,
+    //* For choice implementation, see at overloaded version of it
     private void promotePawnIfNeeded(Position position){
         // validate arguments
         if(position == null){
@@ -124,6 +139,24 @@ public class Game {
             boolean shouldPromote = (color == Color.BLACK && row == 7) || (color == Color.WHITE && row == 0);
             if(shouldPromote){
                 board.replacePiece(position, new Queen(color));
+            }
+        }
+    }
+
+    //* Overloaded method of promotePawnIfNeeded(Position position)
+    private void promotePawnIfNeeded(Position position, PromotionType promotionType){
+        // validate arguments
+        if(position == null){
+        throw new IllegalArgumentException("Position cannot  be null");
+        }
+
+        Piece piece = board.getPiece(position);
+        if(piece instanceof Pawn){
+            int row = position.getRow();
+            Color color = piece.getColor();
+            boolean shouldPromote = (color == Color.BLACK && row == 7) || (color == Color.WHITE && row == 0);
+            if(shouldPromote){
+                board.replacePiece(position, promotionType.createPiece(color));
             }
         }
     }
@@ -378,8 +411,27 @@ public class Game {
         
     }
 
-    //* Fully legal move
-    public boolean makeMove(Move move){
+    private boolean isPromotionMove(Move move){
+        if(move == null){
+            throw new IllegalArgumentException("Move cannot be null");
+        }
+
+        Position from = move.getFrom();
+        Position to = move.getTo();
+
+        Piece piece = board.getPiece(from);
+
+        if( !(piece instanceof Pawn) ){
+            return false;
+        }
+
+        int destinationRow = to.getRow();
+        Color color = piece.getColor();
+
+        return (color == Color.WHITE && destinationRow == 0) || (color == Color.BLACK && destinationRow == 7);
+    }
+
+    private boolean makeMoveInternal(Move move, PromotionType promotionType){
         //* Validate arguments
         if(move == null){
             throw new IllegalArgumentException("Move cannot be null");
@@ -442,7 +494,14 @@ public class Game {
         }
 
         //* promote if possible(this function will take care of whether pawn/not pawn/possible/not possible)
-        promotePawnIfNeeded(move.getTo());
+        //* promote to queen by default if no choice given
+        if(promotionType == null){
+            promotePawnIfNeeded(move.getTo());
+        }
+        //* promote to the choice of piece if provided
+        else{
+            promotePawnIfNeeded(move.getTo(),promotionType);
+        }
 
         //* update the last move
         lastMove = move;
@@ -452,6 +511,31 @@ public class Game {
 
         //* return true to mark successful move completed
         return true;
+    }
+
+    //* Fully legal move
+    public boolean makeMove(Move move){
+        //* Validate arguments
+        if(move == null){
+            throw new IllegalArgumentException("Move cannot be null");
+        }
+        
+        return makeMoveInternal(move, null);
+    }
+
+    //* Overloaded version of Game.makeMove(Move move) */
+    public boolean makeMove(Move move, PromotionType promotionType){
+        if(move == null){
+            throw new IllegalArgumentException("Move cannot be null");
+        }
+        if(promotionType == null){
+            throw new IllegalArgumentException("Promotion type cannot be null");
+        }
+        if(!isPromotionMove(move)){
+            throw new IllegalArgumentException("Move is not a promotion move");
+        }
+
+        return makeMoveInternal(move, promotionType);
     }
 
     public boolean isInCheck(Color color){

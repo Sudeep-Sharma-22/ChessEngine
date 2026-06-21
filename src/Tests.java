@@ -1206,59 +1206,201 @@ public class Tests {
 // false
 
 // Test 36: Undo enPassant
-Board board = new Board();
+// Board board = new Board();
 
-board.placePiece(
-        new Position(0, 0),
-        new King(Color.BLACK)
-);
+// board.placePiece(
+//         new Position(0, 0),
+//         new King(Color.BLACK)
+// );
 
-board.placePiece(
-        new Position(3, 7),
-        new Rook(Color.BLACK)
-);
+// board.placePiece(
+//         new Position(3, 7),
+//         new Rook(Color.BLACK)
+// );
 
-board.placePiece(
-        new Position(7, 7),
-        new King(Color.WHITE)
-);
+// board.placePiece(
+//         new Position(7, 7),
+//         new King(Color.WHITE)
+// );
 
-board.placePiece(
-        new Position(3, 6),
-        new Pawn(Color.WHITE)
-);
+// board.placePiece(
+//         new Position(3, 6),
+//         new Pawn(Color.WHITE)
+// );
 
-board.placePiece(
-        new Position(3, 5),
-        new Pawn(Color.BLACK)
-);
+// board.placePiece(
+//         new Position(3, 5),
+//         new Pawn(Color.BLACK)
+// );
 
-Game game = new Game(
-        board,
-        Color.WHITE,
-        new Move(
-                new Position(1, 5),
-                new Position(3, 5)
-        )
-);
+// Game game = new Game(
+//         board,
+//         Color.WHITE,
+//         new Move(
+//                 new Position(1, 5),
+//                 new Position(3, 5)
+//         )
+// );
 
-System.out.println("Before:");
-System.out.println(game);
+// System.out.println("Before:");
+// System.out.println(game);
 
-boolean result = game.makeMove(
-        new Move(
-                new Position(3, 6),
-                new Position(2, 5)
-        )
-);
+// boolean result = game.makeMove(
+//         new Move(
+//                 new Position(3, 6),
+//                 new Position(2, 5)
+//         )
+// );
 
-System.out.println(result);
+// System.out.println(result);
 
-System.out.println("After:");
-System.out.println(game);
+// System.out.println("After:");
+// System.out.println(game);
 
 // Expected:
 
 // false
+
+//* Test 37: Default  queen promotion
+// Board board = new Board();
+
+// board.placePiece(
+//         new Position(1, 0),
+//         new Pawn(Color.WHITE)
+// );
+
+// board.placePiece(
+//         new Position(7, 4),
+//         new King(Color.WHITE)
+// );
+
+// board.placePiece(
+//         new Position(0, 4),
+//         new King(Color.BLACK)
+// );
+
+// Game game = new Game(board);
+
+// System.out.println(
+//         game.makeMove(
+//                 new Move(
+//                         new Position(1, 0),
+//                         new Position(0, 0)
+//                 )
+//         )
+// );
+
+// System.out.println(
+//         board.getPiece(
+//                 new Position(0, 0)
+//         )
+// );
+
+// Expected :-
+// true
+// Queen@....
+
+
+//* Test 38: Pawn promotion choice test 1 */
+// Board board = new Board();
+
+// board.placePiece(
+//         new Position(1,0),
+//         new Pawn(Color.WHITE)
+// );
+
+// board.placePiece(
+//         new Position(7,4),
+//         new King(Color.WHITE)
+// );
+
+// board.placePiece(
+//         new Position(0,4),
+//         new King(Color.BLACK)
+// );
+
+// Game game = new Game(board);
+
+// game.makeMove(
+//         new Move(
+//                 new Position(1,0),
+//                 new Position(0,0)
+//         ),
+//         PromotionType.KNIGHT
+// );
+
+// System.out.println(board);
+
+// Expected:
+
+// N - - - k - - -
+// ...
+
+//* Test 39: Pawn promotion choice test 2 */
+// Board board = new Board();
+
+// board.placePiece(
+//         new Position(1,0),
+//         new Pawn(Color.WHITE)
+// );
+
+// board.placePiece(
+//         new Position(7,4),
+//         new King(Color.WHITE)
+// );
+
+// board.placePiece(
+//         new Position(0,4),
+//         new King(Color.BLACK)
+// );
+
+// Game game = new Game(board);
+
+// game.makeMove(
+//         new Move(
+//                 new Position(1,0),
+//                 new Position(0,0)
+//         )
+// );
+
+// System.out.println(board);
+
+// Expected:
+// Q - - - k - - -
+// ...
+
+//* Test 40: Pawn promotion choice test 3 */
+// Board board = new Board();
+
+// board.placePiece(
+//         new Position(1,0),
+//         new Pawn(Color.WHITE)
+// );
+
+// board.placePiece(
+//         new Position(7,4),
+//         new King(Color.WHITE)
+// );
+
+// board.placePiece(
+//         new Position(0,4),
+//         new King(Color.BLACK)
+// );
+
+// Game game = new Game(board);
+
+// game.makeMove(
+//         new Move(
+//                 new Position(6,4),
+//                 new Position(4,4)
+//         ),
+//         PromotionType.ROOK
+// );
+
+// System.out.println(board);
+
+// Expected:
+// IllegalArgumentException
+
     }
 }
