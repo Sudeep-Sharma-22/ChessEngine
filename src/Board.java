@@ -203,6 +203,55 @@ public class Board {
         }
         board.append('\n');
 
+        // here board is stringbuilder, so we are calling the toString() method
+        // of stringbuilder, which converts it into a string
+        return board.toString();
+    }
+
+    //* Overloaded method of Board.toString() to enable board flipping while printing
+    public String toString(boolean flip){
+        if(!flip){
+            return toString();
+        }
+
+        StringBuilder board = new StringBuilder();
+        for(int row=BOARD_SIZE-1;row>=0;row--){
+            // add the rank numbers
+            board.append(8 - row);
+            board.append("   ");
+
+            for(int col=BOARD_SIZE-1;col>=0;col--){
+                Square square = squares[row][col];
+                if(!square.isOccupied()){
+                    board.append('-');
+                    board.append(' ');
+                }
+                else{
+                    Piece piece = square.getPiece();
+                    char pieceRepresentation = piece.getRepresentation();
+                    Color pieceColor = piece.getColor();
+                    if(pieceColor == Color.BLACK){
+                        pieceRepresentation = Character.toLowerCase(pieceRepresentation);
+                    }
+                    board.append(pieceRepresentation);
+                    board.append(' ');
+                }
+            }
+            board.append('\n');
+        }
+
+        // append one line space b/w board and file numbers 
+        board.append('\n');
+        // append 4 spaces to be in line(1 space for rank, and gap of 3 spaces b/w rank and board)
+        board.append("    ");
+        for(char file = 'h'; file >= 'a' ; file--){
+            board.append(file);
+            board.append(' ');
+        }
+        board.append('\n');
+
+        // here board is stringbuilder, so we are calling the toString() method
+        // of stringbuilder, which converts it into a string
         return board.toString();
     }
 }

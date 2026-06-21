@@ -568,10 +568,16 @@ public class Game {
         return board.toString();
     }
 
+    //* Overloaded method of getBoardRepresentation()
+    public String getBoardRepresentation(boolean flip){
+        return board.toString(flip);
+    }
+
     public Color getCurrentTurn(){
         return currentTurn;
     }
 
+    //* prints the board without flipping with current turn mentioned
     @Override
     public String toString() {
         return board + "\nCurrent Turn: " + currentTurn +"\n";

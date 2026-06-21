@@ -32,7 +32,9 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         while(true) {
-            System.out.println(game);
+            boolean flip = (game.getCurrentTurn() == Color.BLACK);
+            System.out.println(game.getBoardRepresentation(flip));
+            System.out.println("Current Turn: "+ game.getCurrentTurn()+ "\n");
             System.out.print(game.getCurrentTurn()+" to move: ");
             
             String input = scanner.nextLine();
@@ -63,15 +65,16 @@ public class Main {
                 else{
                     //move has been made successfully and turns switched
                     Color currentTurn = game.getCurrentTurn();
+                    boolean afterMoveChangeFlip = currentTurn == Color.BLACK;
                     Color enemy = currentTurn.opposite();
                     if(game.isCheckmate(currentTurn)){
-                        System.out.println(game.getBoardRepresentation());
+                        System.out.println(game.getBoardRepresentation(afterMoveChangeFlip));
                         System.out.println("Checkmate! " + enemy + " wins!");
                         System.out.println();
                         break;
                     }
                     else if(game.isStalemate(currentTurn)){
-                        System.out.println(game.getBoardRepresentation());
+                        System.out.println(game.getBoardRepresentation(afterMoveChangeFlip));
                         System.out.println("Stalemate! It's a Draw!");
                         System.out.println();
                         break;
