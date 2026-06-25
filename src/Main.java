@@ -27,6 +27,27 @@ public class Main {
         return new Position(row, col);
     }
 
+    private static PromotionType parsePromotionType(String piece){
+        if(piece == null){
+            throw new IllegalArgumentException("Promotion piece cannot be null");
+        }
+
+        piece = piece.trim().toLowerCase();
+
+        switch (piece) {
+            case "q":
+                return PromotionType.QUEEN;
+            case "r":
+                return PromotionType.ROOK;
+            case "b":
+                return PromotionType.BISHOP;
+            case "n": 
+                return PromotionType.KNIGHT;
+            default:
+                throw new IllegalArgumentException("Invalid promotion piece. Use q, r, b or n");
+        }
+    }
+
     public static void main(String[] args) {
         Game game = new Game();
         Scanner scanner = new Scanner(System.in);
@@ -39,14 +60,19 @@ public class Main {
             
             String input = scanner.nextLine();
             System.out.println();
+            System.out.println("----------------------");
+            System.out.println();
 
             if(input.equalsIgnoreCase("quit")){
                 break;
             }
 
             String[] parts = input.trim().split("\\s+");
-            if(parts.length != 2){
-                System.out.println("Invalid input. Give input as: e2 e4");
+            if(parts.length != 2 && parts.length != 3){
+                System.out.println("Invalid input. Give input as:");
+                System.out.println("e2 e4");
+                System.out.println("or");
+                System.out.println("e7 e8 q");
                 System.out.println();
                 continue;
             }
@@ -57,7 +83,21 @@ public class Main {
     
                 Move move = new Move(from, to);
 
-                boolean success = game.makeMove(move);
+                boolean success;
+
+                if(parts.length == 2){
+                    success = game.makeMove(move);
+                }
+                else{
+                    PromotionType promotionType =
+                            parsePromotionType(parts[2]);
+
+                    success = game.makeMove(
+                            move,
+                            promotionType
+                    );
+                }
+
                 if(!success){
                     System.out.println("Illegal move");
                     System.out.println();
